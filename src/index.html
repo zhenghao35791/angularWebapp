@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <!--viewport为了适配手机屏幕的尺寸-->
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no">
+    <title>webapp</title>
+    <link rel="stylesheet" href="css/index.css" media="screen" title="no title" charset="utf-8">
+</head>
+<body ng-app="mainapp">
+    <div class="ui-view">
+
+    </div>
+    <!--为了实现移动端自适应，给根元素html设置一个fontsize，一般为屏幕宽度除以10，html内的元素大小根据根元素变化 -->
+    <script type="text/javascript">
+        document.getElementsByTagName('html')[0].style.fontSize = window.screen.width / 10 + 'px';
+    </script>
+<script src="vender/angular/angular.min.js"></script>
+<script src="vender/angular-ui-router/release/angular-ui-router.min.js"></script>
+<script src="vender/angular-cookies/angular-cookies.min.js"></script>
+<script src="vender/angular-animate/angular-animate.min.js"></script>
+<script src="vender/angular-validation/dist/angular-validation.min.js"></script>
+<script src="js/index.js"></script>
+</body>
+</html>

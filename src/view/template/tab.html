@@ -1,0 +1,15 @@
+<!--
+<ul class="tab">
+    <li class="d-ib ta-c active">薪资</li>
+    <li class="d-ib ta-c">城市</li>
+    <li class="d-ib ta-c">规模</li>
+</ul>
+-->
+<ul class="tab">
+    <li ng-click="click(item);"
+        ng-repeat="item in list"
+        class="d-ib ta-c {{selectId===item.id?'active':''}}"
+        ng-bind="item.name">
+    </li>
+</ul>
+
