@@ -1,6 +1,7 @@
 # angularWebapp
 使用angularjs编写的简单项目，仿写拉钩招聘。
 # 项目依赖
+```javascript
 "dependencies": {
     "angular": "^1.6.2",
     "angular-ui-router": "ui-router#^0.4.2",
@@ -20,6 +21,7 @@
     "gulp-uglify": "^2.0.1",
     "open": "0.0.5"
   }
+```
 # 运行项目方法如下：
 ## install dependencies
 npm install 
