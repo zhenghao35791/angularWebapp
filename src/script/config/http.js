@@ -1,5 +1,5 @@
 /**
- * Created by zhenghao on 2017/2/27.
+ * config/htpp.js
  */
 angular.module('mainapp').config(['$provide', function($provide){
   $provide.decorator('$http', ['$delegate', '$q', function($delegate, $q){

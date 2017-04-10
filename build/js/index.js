@@ -1,4 +1,127 @@
+/*
+  app.js
+ */
 var mainapp = angular.module('mainapp',['ui.router','ngCookies','validation','ngAnimate']);
+/**
+ * config/dist.js
+ */
+angular.module('mainapp').value('dict', {}).run(['dict', '$http', function(dict, $http){
+  //.value('dict', {})创建一个全局变量dist，并初始化赋值为｛｝
+  // 和service有点像，只是没有动态的逻辑，只是一个静态的值
+  $http.get('data/city.json').then(function(resp){
+    dict.city = resp.data;
+  });
+  $http.get('data/salary.json').then(function(resp){
+    dict.salary = resp.data;
+  });
+  $http.get('data/scale.json').then(function(resp){
+    dict.scale =  resp.data;
+  });
+}]);
+
+/**
+ * config/htpp.js
+ */
+angular.module('mainapp').config(['$provide', function($provide){
+  $provide.decorator('$http', ['$delegate', '$q', function($delegate, $q){
+    $delegate.post = function(url, data, config) {
+      var def = $q.defer();
+      $delegate.get(url).then(function(resp) {
+        console.log("$delegate resp:"+resp);
+        console.log("$delegate resp:"+resp.data);
+        def.resolve(resp.data);
+      }).catch(function(err) {
+        def.reject(err);
+      });
+      return {
+        success: function(cb){
+          def.promise.then(cb);
+        },
+        error: function(cb) {
+          def.promise.then(null, cb);
+        }
+      }
+    };
+    return $delegate;
+  }]);
+}]);
+/**
+ * config/router.js
+ */
+angular.module('mainapp').config(['$stateProvider', '$urlRouterProvider',
+  function($stateProvider, $urlRouterProvider){
+    $urlRouterProvider.otherwise('main');
+    $stateProvider
+      .state('main',{
+      url:'/main',// /main:id 传参id
+      templateUrl:'view/main.html',
+      controller:'mainCtrl' //命名方式为，url+Ctrl
+    }).state('position', {
+      url: '/position/:id',
+      templateUrl: 'view/position.html',
+      controller: 'positionCtrl'
+    }).state('company',{
+        url:'/company/:id',
+        templateUrl:'view/company.html',
+        controller:'companyCtrl'
+    }).state('search',{
+      url:'/search',
+      templateUrl:'view/search.html',
+      controller:'searchCtrl'
+    }).state('login', {
+        url: '/login',
+        templateUrl: 'view/login.html',
+        controller: 'loginCtrl'
+    }).state('register', {
+      url: '/register',
+      templateUrl: 'view/register.html',
+      controller: 'registerCtrl'
+    }).state('me', {
+      url: '/me',
+      templateUrl: 'view/me.html',
+      controller: 'meCtrl'
+    }).state('post', {
+      url: '/post',
+      templateUrl: 'view/post.html',
+      controller: 'postCtrl'
+    }).state('favorite', {
+      url: '/favorite',
+      templateUrl: 'view/favorite.html',
+      controller: 'favoriteCtrl'
+    });
+}]);
+/**
+ * config/validation.js
+ */
+'use strict';
+angular.module('mainapp').config(['$validationProvider', function($validationProvider) {
+  var expression = {//校验表达式，可以是方法可以是正则
+    phone: /^1[\d]{10}$/,
+    password: function(value) {
+      var str = value + '' //psd转成string
+      return str.length > 5; //string长度要大于5
+    },
+    required: function(value) {//设定校验规则required不能为空
+      return !!value;
+    }
+  };
+  var defaultMsg = {//提示信息
+    phone: {
+      success: '',//如果校验成功的提示信息
+      error: '必须是11位手机号' //如果校验失败的提示信息
+    },
+    password: {
+      success: '',
+      error: '长度至少6位'
+    },
+    required: {//设定校验规则required不能为空
+      success: '',
+      error: '不能为空'
+    }
+  };
+  $validationProvider.setExpression(expression).setDefaultMsg(defaultMsg);//配置，先配置表达式，再配置提示信息
+}]);
+
 angular.module('mainapp').controller('companyCtrl', ['$http', '$state', '$scope', function($http, $state, $scope){
   $http.get('data/company.json?id='+$state.params.id).then(function(resp){
     $scope.company = resp.data;
@@ -250,6 +373,27 @@ angular.module('mainapp').controller('searchCtrl',['$http', '$scope', 'dict',fun
 
   }
 }]);
+/**
+ * filter/filterByobj.js
+ * 实现对数组的过滤
+ */
+angular.module('mainapp').filter('filterByObj',[function(){
+  return function(list,obj){//数组| 要过滤的对象obj
+    var result = [];
+    angular.forEach(list,function(item){//对数组进行过滤
+      var isEqual = true;
+      for(var e in obj){
+        if(item[e] !== obj[e]) {
+          isEqual = false;
+        }
+      }
+      if(isEqual){
+        result.push(item);
+      }
+    });
+    return result;
+  }
+}]);
 angular.module('mainapp').directive('appCompany', [function(){
   return {
     restrict: 'A',
@@ -416,24 +560,9 @@ angular.module('mainapp').directive('appTab',[function(){
     }
   }
 }]);
-//实现对数组的过滤
-angular.module('mainapp').filter('filterByObj',[function(){
-  return function(list,obj){//数组| 要过滤的对象obj
-    var result = [];
-    angular.forEach(list,function(item){//对数组进行过滤
-      var isEqual = true;
-      for(var e in obj){
-        if(item[e] !== obj[e]) {
-          isEqual = false;
-        }
-      }
-      if(isEqual){
-        result.push(item);
-      }
-    });
-    return result;
-  }
-}]);
+/**
+ * service/cache.js
+ */
 angular.module('mainapp').service('cache',['$cookies',function($cookies){
   this.put = function(key, value){
     $cookies.put(key,value);
@@ -444,117 +573,4 @@ angular.module('mainapp').service('cache',['$cookies',function($cookies){
   this.remove = function(key){
     $cookies.remove(key);
   }
-}]);
-angular.module('mainapp').value('dict', {}).run(['dict', '$http', function(dict, $http){
-  //.value('dict', {})创建一个全局变量dist，并初始化赋值为｛｝
-  // 和service有点像，只是没有动态的逻辑，只是一个静态的值
-  $http.get('data/city.json').then(function(resp){
-    dict.city = resp.data;
-  });
-  $http.get('data/salary.json').then(function(resp){
-    dict.salary = resp.data;
-  });
-  $http.get('data/scale.json').then(function(resp){
-    dict.scale =  resp.data;
-  });
-}]);
-
-/**
- * Created by zhenghao on 2017/2/27.
- */
-angular.module('mainapp').config(['$provide', function($provide){
-  $provide.decorator('$http', ['$delegate', '$q', function($delegate, $q){
-    $delegate.post = function(url, data, config) {
-      var def = $q.defer();
-      $delegate.get(url).then(function(resp) {
-        console.log("$delegate resp:"+resp);
-        console.log("$delegate resp:"+resp.data);
-        def.resolve(resp.data);
-      }).catch(function(err) {
-        def.reject(err);
-      });
-      return {
-        success: function(cb){
-          def.promise.then(cb);
-        },
-        error: function(cb) {
-          def.promise.then(null, cb);
-        }
-      }
-    };
-    return $delegate;
-  }]);
-}]);
-angular.module('mainapp').config(['$stateProvider', '$urlRouterProvider',
-  function($stateProvider, $urlRouterProvider){
-    $urlRouterProvider.otherwise('main');
-    $stateProvider
-      .state('main',{
-      url:'/main',// /main:id 传参id
-      templateUrl:'view/main.html',
-      controller:'mainCtrl' //命名方式为，url+Ctrl
-    }).state('position', {
-      url: '/position/:id',
-      templateUrl: 'view/position.html',
-      controller: 'positionCtrl'
-    }).state('company',{
-        url:'/company/:id',
-        templateUrl:'view/company.html',
-        controller:'companyCtrl'
-    }).state('search',{
-      url:'/search',
-      templateUrl:'view/search.html',
-      controller:'searchCtrl'
-    }).state('login', {
-        url: '/login',
-        templateUrl: 'view/login.html',
-        controller: 'loginCtrl'
-    }).state('register', {
-      url: '/register',
-      templateUrl: 'view/register.html',
-      controller: 'registerCtrl'
-    }).state('me', {
-      url: '/me',
-      templateUrl: 'view/me.html',
-      controller: 'meCtrl'
-    }).state('post', {
-      url: '/post',
-      templateUrl: 'view/post.html',
-      controller: 'postCtrl'
-    }).state('favorite', {
-      url: '/favorite',
-      templateUrl: 'view/favorite.html',
-      controller: 'favoriteCtrl'
-    });
-}]);
-/**
- * Created by zhenghao on 2017/2/24.
- */
-'use strict';
-angular.module('mainapp').config(['$validationProvider', function($validationProvider) {
-  var expression = {//校验表达式，可以是方法可以是正则
-    phone: /^1[\d]{10}$/,
-    password: function(value) {
-      var str = value + '' //psd转成string
-      return str.length > 5; //string长度要大于5
-    },
-    required: function(value) {//设定校验规则required不能为空
-      return !!value;
-    }
-  };
-  var defaultMsg = {//提示信息
-    phone: {
-      success: '',//如果校验成功的提示信息
-      error: '必须是11位手机号' //如果校验失败的提示信息
-    },
-    password: {
-      success: '',
-      error: '长度至少6位'
-    },
-    required: {//设定校验规则required不能为空
-      success: '',
-      error: '不能为空'
-    }
-  };
-  $validationProvider.setExpression(expression).setDefaultMsg(defaultMsg);//配置，先配置表达式，再配置提示信息
 }]);

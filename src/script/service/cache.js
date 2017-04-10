@@ -1,3 +1,6 @@
+/**
+ * service/cache.js
+ */
 angular.module('mainapp').service('cache',['$cookies',function($cookies){
   this.put = function(key, value){
     $cookies.put(key,value);

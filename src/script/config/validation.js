@@ -1,5 +1,5 @@
 /**
- * Created by zhenghao on 2017/2/24.
+ * config/validation.js
  */
 'use strict';
 angular.module('mainapp').config(['$validationProvider', function($validationProvider) {

@@ -1,4 +1,7 @@
-//实现对数组的过滤
+/**
+ * filter/filterByobj.js
+ * 实现对数组的过滤
+ */
 angular.module('mainapp').filter('filterByObj',[function(){
   return function(list,obj){//数组| 要过滤的对象obj
     var result = [];

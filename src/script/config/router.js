@@ -1,3 +1,6 @@
+/**
+ * config/router.js
+ */
 angular.module('mainapp').config(['$stateProvider', '$urlRouterProvider',
   function($stateProvider, $urlRouterProvider){
     $urlRouterProvider.otherwise('main');

@@ -15,11 +15,14 @@
     <script type="text/javascript">
         document.getElementsByTagName('html')[0].style.fontSize = window.screen.width / 10 + 'px';
     </script>
-<script src="vender/angular/angular.min.js"></script>
-<script src="vender/angular-ui-router/release/angular-ui-router.min.js"></script>
-<script src="vender/angular-cookies/angular-cookies.min.js"></script>
-<script src="vender/angular-animate/angular-animate.min.js"></script>
-<script src="vender/angular-validation/dist/angular-validation.min.js"></script>
-<script src="js/index.js"></script>
+    <!--引入目录的路径，以build开发环境中的文件路径为准-->
+    <!--需要先引入angular，后引入router等-->
+    <script src="vender/angular/angular.min.js"></script>
+    <script src="vender/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script src="vender/angular-cookies/angular-cookies.min.js"></script>
+    <script src="vender/angular-animate/angular-animate.min.js"></script>
+    <script src="vender/angular-validation/dist/angular-validation.min.js"></script>
+    <!--把所有script目录下的config，controller，directive，filter，app.js的js文件合并成为一个index.js文件-->
+    <script src="js/index.js"></script>
 </body>
 </html>
